@@ -7,7 +7,7 @@
 -export([
   initChat/0,
   userSignUp/3,
-  userSignIn/3,
+  userSignIn/4,
   userSignOut/2,
   listOnlineUsers/1,
   hasUserRole/3,
@@ -86,7 +86,7 @@ userSignUp(Login, Password, Chat) ->
 
 % user sign in:
 
-userSignInToChat(Login, Chat) ->
+userSignInToChat(Login, Pid, Chat) ->
   Token = generateToken(),
 
   {
@@ -104,7 +104,8 @@ userSignInToChat(Login, Chat) ->
         Login,
         fun(User) ->
           User#user{
-            status = online
+            status = online,
+            pid = Pid
           }
         end,
         Chat#chat.users
@@ -112,7 +113,7 @@ userSignInToChat(Login, Chat) ->
     }
   }.
 
-userSignIn(Login, Password, Chat) ->
+userSignIn(Login, Password, Pid, Chat) ->
   case isUserCredentialsCorrect(Login, Password, Chat) of
     false -> {error, "Bad credentials"};
     true ->
@@ -120,7 +121,7 @@ userSignIn(Login, Password, Chat) ->
         error -> {error, "Bad credentials"};
         true -> {error, "User already signed in"};
         false ->
-          userSignInToChat(Login, Chat)
+          userSignInToChat(Login, Pid, Chat)
       end
   end.
 
@@ -133,7 +134,7 @@ userSignOutFromChat(Login, Chat) ->
       fun(User) ->
         User#user{
           status = offline,
-          connection = none
+          pid = none
         }
       end,
       Chat#chat.users

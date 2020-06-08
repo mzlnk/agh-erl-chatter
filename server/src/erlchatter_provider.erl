@@ -5,7 +5,7 @@
 
 %% API
 -export([
-  userSignIn/3,
+  userSignIn/4,
   userSignUp/3,
   userSignOut/2,
   listOnlineUsers/2,
@@ -18,8 +18,8 @@ userSignUp(Login, Password, Chat) ->
     NewState -> {NewState, ok}
   end.
 
-userSignIn(Login, Password, Chat) ->
-  case erlchatter:userSignIn(Login, Password, Chat) of
+userSignIn(Login, Password, Pid, Chat) ->
+  case erlchatter:userSignIn(Login, Password, Pid, Chat) of
     {error, Msg} -> {Chat, {error, Msg}};
     {Token, NewState} -> {NewState, {ok, Token}}
   end.
@@ -46,7 +46,7 @@ messageAll(Token, Message, Chat) ->
     Login ->
       lists:foreach(
         fun(User) ->
-          User#user.connection ! {message, Message, Login} % todo: to inspect
+          User#user.pid ! {message, Message, Login, calendar:local_time()} % todo: to inspect
         end,
         erlchatter:listOnlineUsers(Chat)
       )
