@@ -26,8 +26,8 @@ handle_call({userSignUp, Login, Password}, _From, State) ->
   {UpdatedState, Reply} = erlchatter_provider:userSignUp(Login, Password, State),
   {reply, Reply, UpdatedState};
 
-handle_call({userSignIn, Login, Password}, _From, State) ->
-  {UpdatedState, Reply} = erlchatter_provider:userSignIn(Login, Password, State),
+handle_call({userSignIn, Login, Password, Pid}, _From, State) ->
+  {UpdatedState, Reply} = erlchatter_provider:userSignIn(Login, Password, Pid, State),
   {reply, Reply, UpdatedState};
 
 handle_call({userSignOut, Token}, _From, State) ->

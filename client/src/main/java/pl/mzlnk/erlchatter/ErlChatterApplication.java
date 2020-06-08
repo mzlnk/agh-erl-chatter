@@ -8,6 +8,10 @@ import javafx.stage.Stage;
 
 public class ErlChatterApplication extends Application {
 
+    public static void start(String[] args) {
+        launch(args);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/chat.fxml"));
