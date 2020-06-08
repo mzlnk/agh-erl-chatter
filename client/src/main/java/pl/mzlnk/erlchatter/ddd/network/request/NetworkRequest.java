@@ -1,9 +1,11 @@
 package pl.mzlnk.erlchatter.ddd.network.request;
 
-import com.ericsson.otp.erlang.OtpErlangTuple;
+import com.ericsson.otp.erlang.OtpErlangList;
 
 public interface NetworkRequest {
 
-    OtpErlangTuple toTuple();
+    RequestTypeEnum getRequestType();
+
+    OtpErlangList getArgs();
 
 }

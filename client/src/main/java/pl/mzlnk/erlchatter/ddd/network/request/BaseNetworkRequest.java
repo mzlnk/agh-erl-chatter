@@ -1,26 +1,21 @@
 package pl.mzlnk.erlchatter.ddd.network.request;
 
-import com.ericsson.otp.erlang.OtpErlangTuple;
+import com.ericsson.otp.erlang.OtpErlangList;
 import lombok.AllArgsConstructor;
-import pl.mzlnk.erlchatter.ddd.utils.ErlangTupleCreator;
+import lombok.Getter;
+import pl.mzlnk.erlchatter.ddd.utils.OtpErlangListCreator;
 
-import java.util.stream.Stream;
-
+@Getter
 @AllArgsConstructor
 public abstract class BaseNetworkRequest implements NetworkRequest {
 
-    private RequestTypeEnum atom;
+    private RequestTypeEnum requestType;
 
     protected abstract Object[] args();
 
     @Override
-    public OtpErlangTuple toTuple() {
-        return ErlangTupleCreator.toTuple(
-                Stream.concat(
-                        Stream.of(this.atom),
-                        Stream.of(args())
-                ).toArray()
-        );
+    public OtpErlangList getArgs() {
+        return OtpErlangListCreator.toList(args());
     }
 
 }

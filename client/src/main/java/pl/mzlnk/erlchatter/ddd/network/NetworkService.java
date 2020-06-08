@@ -12,13 +12,18 @@ import java.util.UUID;
 
 public class NetworkService {
 
-    private static final String COOKIE = "erlchatter-ahHETnc1947HD981wQ";
+    private static final String COOKIE = "erlangcookie";
+    private static final String SERVER_NAME = "erlchatter_gen_server";
 
     private final UUID nodeUuid;
 
-    private OtpNode node;
-    private OtpErlangPid pid;
-    private OtpMbox mailBox;
+//    private OtpNode node;
+//    private OtpErlangPid pid;
+//    private OtpMbox mailBox;
+
+    private OtpSelf client;
+    private OtpPeer server;
+    private OtpConnection connection;
 
     private List<NetworkResponseObserver> responseObservers = new ArrayList<>();
     private volatile boolean running;
@@ -27,10 +32,23 @@ public class NetworkService {
         this.nodeUuid = UUID.randomUUID();
     }
 
-    public void start() throws IOException {
-        this.node = new OtpNode(this.nodeUuid.toString(), COOKIE);
-        this.mailBox = this.node.createMbox();
-        this.pid = this.mailBox.self();
+    public void start() throws IOException, OtpAuthException {
+//        this.node = new OtpNode(this.nodeUuid.toString(), COOKIE);
+//        this.mailBox = this.node.createMbox();
+//        this.pid = this.mailBox.self();
+//
+//        if(this.node.ping(SERVER_NAME, 10000)) {
+//            this.running = true;
+//            new Thread(new ResponseReceiveTask()).start();
+//
+//            System.out.println("Connected to server");
+//        } else {
+//            System.out.println("Could not connect to server");
+//        }
+
+        client = new OtpSelf("chatClient", COOKIE);
+        server = new OtpPeer("chatServer");
+        connection = client.connect(server);
 
         this.running = true;
         new Thread(new ResponseReceiveTask()).start();
@@ -49,7 +67,21 @@ public class NetworkService {
     }
 
     public void sendRequest(NetworkRequest request) {
+        try {
+            connection.sendRPC("erlchatter_gen_server", request.getRequestType().toString().toLowerCase(), request.getArgs());
+            System.out.println("Request sent");
+        } catch (IOException e) {
+            System.out.println("Could not send request");
+        }
+        // mailBox.send(SERVER_NAME, this.nodeUuid.toString(), request.toTuple());
+    }
 
+    public void sendTestRequest() {
+        try {
+            connection.sendRPC("erlchatter_gen_server", "test", new OtpErlangList(new OtpErlangObject[] {new OtpErlangString("test message")}));
+        } catch (IOException e) {
+            System.out.println("Could not send request");
+        }
     }
 
     private class ResponseReceiveTask implements Runnable {
@@ -58,14 +90,14 @@ public class NetworkService {
         public void run() {
             while(true) {
                 if(!NetworkService.this.running) {
-                    NetworkService.this.mailBox.close();
-                    NetworkService.this.node.close();
+                    connection.close();
 
                     return;
                 }
 
                 try {
-                    OtpErlangObject response = mailBox.receive();
+                    OtpErlangObject response = ((OtpErlangTuple) connection.receiveMsg().getMsg()).elementAt(1);
+                    System.out.println("Response: " + response);
 
                     if(response instanceof OtpErlangTuple tuple) {
                         ResponseTypeEnum responseType = OtpErlangObjectDto.fromObject(tuple.elementAt(0)).getResponseTypeEnumValue();
@@ -79,7 +111,7 @@ public class NetworkService {
                             case MESSAGE_ALL -> responseObservers.forEach(o -> o.onResponse(MessageAllResponse.fromTuple(tuple)));
                         }
                     }
-                } catch (OtpErlangExit | OtpErlangDecodeException otpErlangExit) {
+                } catch (OtpErlangExit | IOException | OtpAuthException | OtpErlangDecodeException otpErlangExit) {
                     otpErlangExit.printStackTrace();
                 }
             }

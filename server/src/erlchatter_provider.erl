@@ -15,13 +15,13 @@
 userSignUp(Login, Password, Chat) ->
   case erlchatter:userSignUp(Login, Password, Chat) of
     {error, Msg} -> {Chat, {error, Msg}};
-    NewState -> {NewState, ok}
+    NewState -> {NewState, {user_sign_up, Login}}
   end.
 
 userSignIn(Login, Password, Pid, Chat) ->
   case erlchatter:userSignIn(Login, Password, Pid, Chat) of
     {error, Msg} -> {Chat, {error, Msg}};
-    {Token, NewState} -> {NewState, {ok, Token}}
+    {Token, NewState} -> {NewState, {user_sign_in, Login, Token}}
   end.
 
 userSignOut(Token, Chat) ->
@@ -30,14 +30,14 @@ userSignOut(Token, Chat) ->
     Login ->
       case erlchatter:userSignOut(Login, Chat) of
         {error, Msg} -> {Chat, {error, Msg}};
-        NewState -> {NewState, ok}
+        NewState -> {NewState, {user_sign_out, ok}}
       end
   end.
 
 listOnlineUsers(Token, Chat) ->
   case erlchatter:validateToken(Token, Chat) of
     invalid -> {Chat, {error, "Invalid token"}};
-    valid -> {Chat, erlchatter:listOnlineUsers(Chat)}
+    valid -> {Chat, {list_online_users, erlchatter:listOnlineUsers(Chat)}}
   end.
 
 messageAll(Token, Message, Chat) ->
@@ -46,7 +46,7 @@ messageAll(Token, Message, Chat) ->
     Login ->
       lists:foreach(
         fun(User) ->
-          User#user.pid ! {message, Message, Login, calendar:local_time()} % todo: to inspect
+          User#user.pid ! {message_all, Login, Message, calendar:local_time()} % todo: to inspect
         end,
         erlchatter:listOnlineUsers(Chat)
       )

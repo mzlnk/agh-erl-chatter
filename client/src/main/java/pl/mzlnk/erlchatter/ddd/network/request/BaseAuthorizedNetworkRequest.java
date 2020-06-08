@@ -1,15 +1,12 @@
 package pl.mzlnk.erlchatter.ddd.network.request;
 
-import com.ericsson.otp.erlang.OtpErlangTuple;
+import com.ericsson.otp.erlang.OtpErlangList;
 import pl.mzlnk.erlchatter.ddd.user.User;
-import pl.mzlnk.erlchatter.ddd.utils.ErlangTupleCreator;
-
-import java.util.stream.Stream;
+import pl.mzlnk.erlchatter.ddd.utils.OtpErlangListCreator;
 
 public abstract class BaseAuthorizedNetworkRequest extends BaseNetworkRequest {
 
     private User user;
-    private RequestTypeEnum atom;
 
     public BaseAuthorizedNetworkRequest(User user, RequestTypeEnum atom) {
         super(atom);
@@ -17,12 +14,7 @@ public abstract class BaseAuthorizedNetworkRequest extends BaseNetworkRequest {
     }
 
     @Override
-    public OtpErlangTuple toTuple() {
-        return ErlangTupleCreator.toTuple(
-                Stream.concat(
-                        Stream.of(this.atom, this.user.getToken()),
-                        Stream.of(args())
-                ).toArray()
-        );
+    public OtpErlangList getArgs() {
+        return OtpErlangListCreator.toList(args());
     }
 }

@@ -4,10 +4,10 @@ import com.ericsson.otp.erlang.*;
 
 import java.util.stream.Stream;
 
-public class ErlangTupleCreator {
+public class OtpErlangListCreator {
 
-    public static OtpErlangTuple toTuple(Object[] objects) {
-        return new OtpErlangTuple(
+    public static OtpErlangList toList(Object[] objects) {
+        return new OtpErlangList(
                 Stream.of(objects)
                         .map(obj -> {
                                     OtpErlangObject otpObject = null;
@@ -29,7 +29,6 @@ public class ErlangTupleCreator {
                                 }
                         )
                         .toArray(OtpErlangObject[]::new)
-
         );
     }
 
