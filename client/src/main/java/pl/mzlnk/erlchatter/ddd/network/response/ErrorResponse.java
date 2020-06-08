@@ -9,8 +9,8 @@ import pl.mzlnk.erlchatter.ddd.utils.OtpErlangObjectDto;
 public class ErrorResponse extends BaseNetworkResponse {
 
     public static ErrorResponse fromTuple(OtpErlangTuple tuple) {
-        RequestTypeEnum from = OtpErlangObjectDto.fromObject(tuple.elementAt(0)).getRequestTypeEnumValue();
-        String message = OtpErlangObjectDto.fromObject(tuple.elementAt(1)).getStringValue();
+        RequestTypeEnum from = OtpErlangObjectDto.fromObject(tuple.elementAt(1)).getRequestTypeEnumValue();
+        String message = OtpErlangObjectDto.fromObject(tuple.elementAt(2)).getStringValue();
 
         return new ErrorResponse(from, message);
     }

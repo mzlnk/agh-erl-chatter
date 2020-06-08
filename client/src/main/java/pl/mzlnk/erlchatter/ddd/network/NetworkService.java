@@ -8,6 +8,7 @@ import pl.mzlnk.erlchatter.ddd.utils.OtpErlangObjectDto;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class NetworkService {
@@ -16,10 +17,6 @@ public class NetworkService {
     private static final String SERVER_NAME = "erlchatter_gen_server";
 
     private final UUID nodeUuid;
-
-//    private OtpNode node;
-//    private OtpErlangPid pid;
-//    private OtpMbox mailBox;
 
     private OtpSelf client;
     private OtpPeer server;
@@ -33,25 +30,14 @@ public class NetworkService {
     }
 
     public void start() throws IOException, OtpAuthException {
-//        this.node = new OtpNode(this.nodeUuid.toString(), COOKIE);
-//        this.mailBox = this.node.createMbox();
-//        this.pid = this.mailBox.self();
-//
-//        if(this.node.ping(SERVER_NAME, 10000)) {
-//            this.running = true;
-//            new Thread(new ResponseReceiveTask()).start();
-//
-//            System.out.println("Connected to server");
-//        } else {
-//            System.out.println("Could not connect to server");
-//        }
-
-        client = new OtpSelf("chatClient", COOKIE);
+        client = new OtpSelf(nodeUuid.toString().replaceAll("-", ""), COOKIE);
         server = new OtpPeer("chatServer");
         connection = client.connect(server);
 
         this.running = true;
         new Thread(new ResponseReceiveTask()).start();
+
+        System.out.println("User pid: " + Optional.ofNullable(this.client.pid()).map(OtpErlangPid::toString).orElse("null!"));
     }
 
     public void stop() {
@@ -68,20 +54,18 @@ public class NetworkService {
 
     public void sendRequest(NetworkRequest request) {
         try {
-            connection.sendRPC("erlchatter_gen_server", request.getRequestType().toString().toLowerCase(), request.getArgs());
+            System.out.println("request: " + request);
+            System.out.println("args: " + request.getArgs());
+            connection.sendRPC("erlchatter_gen_server", request.getRequestType().name().toLowerCase(), request.getArgs());
             System.out.println("Request sent");
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             System.out.println("Could not send request");
+            e.printStackTrace();
         }
-        // mailBox.send(SERVER_NAME, this.nodeUuid.toString(), request.toTuple());
     }
 
-    public void sendTestRequest() {
-        try {
-            connection.sendRPC("erlchatter_gen_server", "test", new OtpErlangList(new OtpErlangObject[] {new OtpErlangString("test message")}));
-        } catch (IOException e) {
-            System.out.println("Could not send request");
-        }
+    public OtpErlangPid getPid() {
+        return client.pid();
     }
 
     private class ResponseReceiveTask implements Runnable {
@@ -104,15 +88,16 @@ public class NetworkService {
 
                         switch (responseType) {
                             case ERROR -> responseObservers.forEach(o -> o.onResponse(ErrorResponse.fromTuple(tuple)));
-                            case SIGN_IN -> responseObservers.forEach(o -> o.onResponse(SignInResponse.fromTuple(tuple)));
-                            case SIGN_UP -> responseObservers.forEach(o -> o.onResponse(SignUpResponse.fromTuple(tuple)));
-                            case SIGN_OUT -> responseObservers.forEach(o -> o.onResponse(new SignOutResponse()));
-                            case MESSAGE_TO -> responseObservers.forEach(o -> o.onResponse(MessageToResponse.fromTuple(tuple)));
+                            case USER_SIGN_IN -> responseObservers.forEach(o -> o.onResponse(SignInResponse.fromTuple(tuple)));
+                            case USER_SIGN_UP -> responseObservers.forEach(o -> o.onResponse(SignUpResponse.fromTuple(tuple)));
+                            case USER_SIGN_OUT -> responseObservers.forEach(o -> o.onResponse(new SignOutResponse()));
                             case MESSAGE_ALL -> responseObservers.forEach(o -> o.onResponse(MessageAllResponse.fromTuple(tuple)));
+                            case USER_JOIN -> responseObservers.forEach(o -> o.onResponse(UserJoinResponse.fromTuple(tuple)));
+                            case USER_LEAVE -> responseObservers.forEach(o -> o.onResponse(UserLeaveResponse.fromTuple(tuple)));
                         }
                     }
-                } catch (OtpErlangExit | IOException | OtpAuthException | OtpErlangDecodeException otpErlangExit) {
-                    otpErlangExit.printStackTrace();
+                } catch (OtpErlangExit | IOException | OtpAuthException | OtpErlangDecodeException e) {
+                    e.printStackTrace();
                 }
             }
         }

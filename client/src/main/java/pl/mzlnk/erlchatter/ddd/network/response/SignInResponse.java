@@ -18,7 +18,7 @@ public class SignInResponse extends BaseNetworkResponse {
     private String token;
 
     public SignInResponse(String login, String token) {
-        super(ResponseTypeEnum.SIGN_IN);
+        super(ResponseTypeEnum.USER_SIGN_IN);
         this.login = login;
         this.token = token;
     }

@@ -1,7 +1,9 @@
 package pl.mzlnk.erlchatter.ddd.network.request;
 
+import lombok.ToString;
 import pl.mzlnk.erlchatter.ddd.user.User;
 
+@ToString(callSuper = true)
 public class SignOutRequest extends BaseAuthorizedNetworkRequest {
 
     public SignOutRequest(User user) {
@@ -10,7 +12,7 @@ public class SignOutRequest extends BaseAuthorizedNetworkRequest {
 
     @Override
     protected Object[] args() {
-        return new Object[0];
+        return new Object[]{super.user.getToken()};
     }
 
 }

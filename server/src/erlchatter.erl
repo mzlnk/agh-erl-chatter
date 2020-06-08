@@ -142,9 +142,10 @@ userSignOutFromChat(Login, Chat) ->
   }.
 
 userSignOut(Login, Chat) ->
-  case loginExists(Login, Chat) of
+  {LoginName} = Login,
+  case loginExists(LoginName, Chat) of
     false -> {error, "User with given login does not exist"};
-    true -> userSignOutFromChat(Login, Chat)
+    true -> userSignOutFromChat(LoginName, Chat)
   end.
 
 % list online users:

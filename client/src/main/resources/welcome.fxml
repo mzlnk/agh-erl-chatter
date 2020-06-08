@@ -48,7 +48,7 @@
            GridPane.rowIndex="1">
     </Label>
     <!-- Add Name Text Field -->
-    <TextField fx:id="nameField"
+    <TextField fx:id="loginField"
                prefHeight="40"
                GridPane.columnIndex="1"
                GridPane.rowIndex="1"/>
@@ -69,6 +69,7 @@
     <!-- Add Submit Button -->
     <Button fx:id="signInButton"
             text="sign in"
+            onAction="#onSignIn"
             prefWidth="200"
             prefHeight="40"
             defaultButton="true"
@@ -86,6 +87,7 @@
     <!-- Add Submit Button -->
     <Button fx:id="signUpButton"
             text="sign up"
+            onAction="#onSignUp"
             prefWidth="200"
             prefHeight="40"
             defaultButton="true"

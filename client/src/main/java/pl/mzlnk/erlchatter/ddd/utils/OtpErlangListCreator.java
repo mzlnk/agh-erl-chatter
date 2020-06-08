@@ -24,6 +24,9 @@ public class OtpErlangListCreator {
                                     if (obj instanceof Double d) {
                                         otpObject = new OtpErlangDouble(d);
                                     }
+                                    if(obj instanceof OtpErlangPid pid) {
+                                        otpObject = pid;
+                                    }
 
                                     return otpObject;
                                 }

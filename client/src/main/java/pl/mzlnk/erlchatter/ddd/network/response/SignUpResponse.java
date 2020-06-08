@@ -16,7 +16,7 @@ public class SignUpResponse extends BaseNetworkResponse {
     private String login;
 
     public SignUpResponse(String login) {
-        super(ResponseTypeEnum.SIGN_UP);
+        super(ResponseTypeEnum.USER_SIGN_UP);
         this.login = login;
     }
 

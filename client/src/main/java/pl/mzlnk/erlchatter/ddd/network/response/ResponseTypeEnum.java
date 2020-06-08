@@ -7,9 +7,11 @@ public enum ResponseTypeEnum {
     ERROR,
     MESSAGE_ALL,
     MESSAGE_TO,
-    SIGN_IN,
-    SIGN_UP,
-    SIGN_OUT;
+    USER_SIGN_IN,
+    USER_SIGN_UP,
+    USER_SIGN_OUT,
+    USER_JOIN,
+    USER_LEAVE;
 
     public static boolean contains(String name) {
         return Stream.of(values())

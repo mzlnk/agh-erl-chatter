@@ -7,16 +7,15 @@ import pl.mzlnk.erlchatter.ddd.utils.OtpErlangObjectDto;
 import java.util.Calendar;
 
 @Getter
-public class MessageAllResponse extends  BaseNetworkResponse {
+public class UserLeaveResponse extends BaseNetworkResponse {
 
-    public static MessageAllResponse fromTuple(OtpErlangTuple tuple) {
-        String from = OtpErlangObjectDto.fromObject(tuple.elementAt(1)).getStringValue();
-        String message = OtpErlangObjectDto.fromObject(tuple.elementAt(2)).getStringValue();
+    public static UserLeaveResponse fromTuple(OtpErlangTuple tuple) {
+        String who = OtpErlangObjectDto.fromObject(tuple.elementAt(1)).getStringValue();
 
         Calendar date = Calendar.getInstance();
 
-        OtpErlangTuple dateTuple = (OtpErlangTuple) ((OtpErlangTuple) tuple.elementAt(3)).elementAt(0);
-        OtpErlangTuple timeTuple = (OtpErlangTuple) ((OtpErlangTuple) tuple.elementAt(3)).elementAt(1);
+        OtpErlangTuple dateTuple = (OtpErlangTuple) ((OtpErlangTuple) tuple.elementAt(2)).elementAt(0);
+        OtpErlangTuple timeTuple = (OtpErlangTuple) ((OtpErlangTuple) tuple.elementAt(2)).elementAt(1);
 
         date.set(Calendar.YEAR, (int) OtpErlangObjectDto.fromObject(dateTuple.elementAt(0)).getLongValue());
         date.set(Calendar.MONTH, (int) OtpErlangObjectDto.fromObject(dateTuple.elementAt(1)).getLongValue() - 1);
@@ -26,17 +25,15 @@ public class MessageAllResponse extends  BaseNetworkResponse {
         date.set(Calendar.MINUTE, (int) OtpErlangObjectDto.fromObject(timeTuple.elementAt(1)).getLongValue());
         date.set(Calendar.SECOND, (int) OtpErlangObjectDto.fromObject(timeTuple.elementAt(2)).getLongValue());
 
-        return new MessageAllResponse(from, message, date);
+        return new UserLeaveResponse(who, date);
     }
 
-    private String from;
-    private String message;
+    private String who;
     private Calendar date;
 
-    public MessageAllResponse(String from, String message, Calendar date) {
-        super(ResponseTypeEnum.MESSAGE_ALL);
-        this.from = from;
-        this.message = message;
+    public UserLeaveResponse(String who, Calendar date) {
+        super(ResponseTypeEnum.USER_LEAVE);
+        this.who = who;
         this.date = date;
     }
 

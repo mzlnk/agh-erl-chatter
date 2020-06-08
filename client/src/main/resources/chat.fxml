@@ -3,7 +3,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.*?>
-<GridPane fx:controller="pl.mzlnk.erlchatter.controller.WelcomeController"
+<GridPane fx:controller="pl.mzlnk.erlchatter.controller.ChatController"
           xmlns:fx="http://javafx.com/fxml"
           alignment="center"
           hgap="10" vgap="10">
@@ -31,6 +31,10 @@
                 GridPane.columnSpan="6"
                 GridPane.rowIndex="0">
 
+        <VBox fx:id="chatContainer"
+                prefWidth="600" />
+
+
         <GridPane.margin>
             <Insets bottom="20"/>
         </GridPane.margin>
@@ -38,22 +42,35 @@
     </ScrollPane>
 
     <!-- Add Name Text Field -->
-    <TextField fx:id="nameField"
+    <TextField fx:id="messageField"
                prefHeight="40"
                prefWidth="450"
                GridPane.columnIndex="0"
-               GridPane.columnSpan="5"
+               GridPane.columnSpan="4"
                GridPane.rowIndex="1"/>
 
     <!-- Add Submit Button -->
-    <Button fx:id="signInButton"
+    <Button fx:id="sendButton"
             text="send"
+            prefWidth="100"
+            prefHeight="40"
+            defaultButton="true"
+            GridPane.columnIndex="4"
+            GridPane.rowIndex="1"
+            GridPane.rowSpan="1"
+            onAction="#onMessageSend"
+            GridPane.halignment="RIGHT"/>
+
+    <!-- Add Submit Button -->
+    <Button fx:id="signOutButton"
+            text="sign out"
             prefWidth="100"
             prefHeight="40"
             defaultButton="true"
             GridPane.columnIndex="5"
             GridPane.rowIndex="1"
             GridPane.rowSpan="1"
+            onAction="#onSignOut"
             GridPane.halignment="RIGHT"/>
 
 </GridPane>

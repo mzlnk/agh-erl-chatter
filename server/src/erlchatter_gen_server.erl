@@ -20,7 +20,8 @@
   user_sign_in/3,
   user_sign_up/2,
   user_sign_out/1,
-  test/1
+  test/1,
+  message_all/2
 ]).
 
 start_link() ->
@@ -48,7 +49,7 @@ handle_call({list_online_users, Token}, _From, State) ->
 handle_call({test, Msg}, _From, State) ->
   {reply, "Hi!", State}.
 
-handle_cast({message, Token, Message}, State) ->
+handle_cast({message_all, Token, Message}, State) ->
   erlchatter_provider:messageAll(Token, Message, State),
   {noreply, State}.
 
@@ -73,3 +74,5 @@ user_sign_in(Login, Password, Pid) -> gen_server:call(?MODULE, {user_sign_in, Lo
 user_sign_out(Token) -> gen_server:call(?MODULE, {user_sign_out, Token}).
 
 test(Msg) -> gen_server:call(?MODULE, {test, Msg}).
+
+message_all(Token, Message) -> gen_server:cast(?MODULE, {message_all, Token, Message}).

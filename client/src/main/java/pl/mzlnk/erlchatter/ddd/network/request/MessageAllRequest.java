@@ -13,7 +13,7 @@ public class MessageAllRequest extends BaseAuthorizedNetworkRequest {
 
     @Override
     protected Object[] args() {
-        return new Object[]{this.message};
+        return new Object[]{super.user.getToken(), this.message};
     }
 
 }
