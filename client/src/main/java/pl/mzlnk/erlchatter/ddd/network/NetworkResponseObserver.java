@@ -6,7 +6,6 @@ public interface NetworkResponseObserver {
 
     default void onResponse(ErrorResponse response) {}
     default void onResponse(MessageAllResponse response) {}
-    default void onResponse(MessageToResponse response) {}
     default void onResponse(SignInResponse response) {}
     default void onResponse(SignUpResponse response) {}
     default void onResponse(SignOutResponse response) {}

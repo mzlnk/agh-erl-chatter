@@ -14,7 +14,6 @@ import java.util.UUID;
 public class NetworkService {
 
     private static final String COOKIE = "erlangcookie";
-    private static final String SERVER_NAME = "erlchatter_gen_server";
 
     private final UUID nodeUuid;
 
@@ -54,10 +53,7 @@ public class NetworkService {
 
     public void sendRequest(NetworkRequest request) {
         try {
-            System.out.println("request: " + request);
-            System.out.println("args: " + request.getArgs());
             connection.sendRPC("erlchatter_gen_server", request.getRequestType().name().toLowerCase(), request.getArgs());
-            System.out.println("Request sent");
         } catch (IOException | NullPointerException e) {
             System.out.println("Could not send request");
             e.printStackTrace();
@@ -81,7 +77,6 @@ public class NetworkService {
 
                 try {
                     OtpErlangObject response = ((OtpErlangTuple) connection.receiveMsg().getMsg()).elementAt(1);
-                    System.out.println("Response: " + response);
 
                     if(response instanceof OtpErlangTuple tuple) {
                         ResponseTypeEnum responseType = OtpErlangObjectDto.fromObject(tuple.elementAt(0)).getResponseTypeEnumValue();
